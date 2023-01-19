@@ -7,9 +7,11 @@
 ## Solution
 
 * Create a simple circuit breaker to disable the down end points
-* The "simple" intent is that it doesn't automatically return the breaker to the closed state, in other words, it doesn't enable the endpoint again. It is assumed that an operator judges whether failback is possible and fails back manually
+* The "simple" intent is that it doesn't automatically return the breaker to the closed state, in other words, it doesn't re-enable the endpoint. It is assumed that an operator will judge whether failback is possible and manually failback
 * Implement the breaker on Azure Functions (Go)
-* Azure Monitor check Azure Traffic Manager endpoint status metric and alert to breaker when some endpoints are not online
+  * Sample code is in this repository
+  * Tested on Linux Consumption plan
+* Azure Monitor checks Azure Traffic Manager endpoint status metric and alerts the breaker when some endpoints are not online
 
 ## Overview
 
@@ -31,11 +33,13 @@ flowchart LR
 
 ## Conditions for disabling endpoints
 
+Conditions are somewhat conservative considering the risks.
+
 * Azure Traffic Manager Routing Method: Priority
 * Alert Condition: Fired
 * Have multiple endpoints
 * Have at least one online endpoint
-* Sort endpoints by priority and disable endpoints that not online and have not been disabled. Exit when an online endpoint is found.
+* Sort endpoints by priority and disable endpoints that are not online and have not been disabled. Exit if an online endpoint is found.
 
 ## Alert rule example
 
@@ -48,7 +52,7 @@ flowchart LR
 
 ## Room for improvement
 
-* Implement full features of circuit breaker (Transition control Open/Half-Open/Close)
+* Implement [full features of circuit breaker](https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker) (Transition control Open/Half-Open/Closed)
   * But complexity brings risk, so it might be better to give [feedback](https://feedback.azure.com/d365community/idea/9330affc-18c9-ec11-a81b-0022484ee92d?utm_source=pocket_saves) the product handles it.
 * Implement unit tests for functions that call Azure Resource Manager APIs
   * [Waiting for SDK support test double](https://github.com/Azure/azure-sdk-for-go/issues/16613)
