@@ -1,6 +1,6 @@
 # Simple circuit breaker for Azure Traffic Manager
 
-## Backgroud
+## Background
 
 [Azure Traffic Manager is useful for site failover](https://learn.microsoft.com/en-us/azure/networking/disaster-recovery-dns-traffic-manager). However, it might fail back before the site has fully recovered because the probe might assume the site has recovered after [a single success](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring#endpoint-failover-and-recovery). [The health endpoints that probes check should confirm full recovery](https://learn.microsoft.com/en-us/azure/architecture/guide/design-principles/redundancy), but may not cover complex failures. Failing back due to false negatives has adverse effects such as flapping.
 
